@@ -1,11 +1,12 @@
-namespace LimOrleansServerOnlySimulator.Grains;
+using Orleans;
+using Orleans.Streams;
 
-public interface ILimGrain : IGrainWithGuidKey
+namespace LimOrleansServer.Grains
 {
-    Task StartAsync();
-    Task ProcessSlabAsync();
-    Task SetMasterOrderCode(string masterOrderCode);
-    Task<StreamId> GetSlabStreamId();
-    Task<StreamId> GetOrderStreamId();
-    Task StopAsync();
+    public interface ILimGrain : IGrainWithGuidKey
+    {
+        Task StartAsync();
+        Task ProcessSlabAsync();
+        Task UpdateMasterOrderCode(string orderCode);
+    }
 }

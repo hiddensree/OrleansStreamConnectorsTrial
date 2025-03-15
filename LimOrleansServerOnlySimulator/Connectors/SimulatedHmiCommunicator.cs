@@ -1,35 +1,28 @@
-using System;
 using Microsoft.Extensions.Logging;
+using Orleans;
 
-namespace LimOrleansServerOnlySimulator.Connectors;
-
-public class SimulatedHmiCommunicator(ILogger<IHmiCommunicatorGrain> logger)
-    : Grain,
-        IHmiCommunicatorGrain
+namespace LimOrleansServer.Connectors
 {
-    private readonly Random _random = new();
-
-    public override Task OnActivateAsync(CancellationToken cancellationToken)
+    public class SimulatedHmiCommunicator(ILogger<IHmiCommunicator> logger)
+        : Grain,
+            IHmiCommunicator
     {
-        logger.LogInformation(
-            "SimulatedHmiCommunicator activated with primary key {PrimaryKey}",
-            this.GetPrimaryKey()
-        );
-        return base.OnActivateAsync(cancellationToken);
-    }
+        private readonly Random _random = new();
 
-    /// <summary>
-    /// Simulates the recieving of a type ID from an HMI.
-    /// </summary>
-    /// <returns></returns>
-    public Task<string> RecieveTypeIdAsync()
-    {
-        string typeId = $"Type{_random.Next(1, 10)}";
-        logger.LogInformation(
-            "SimulatedHmiCommunicator {PrimaryKey} recieved type ID {TypeId}",
-            this.GetPrimaryKey(),
-            typeId
-        );
-        return Task.FromResult(typeId);
+        public override Task OnActivateAsync(CancellationToken cancellationToken)
+        {
+            logger.LogInformation(
+                "SimulatedHmiCommunicator activated with key: {Key}",
+                this.GetPrimaryKey()
+            );
+            return Task.CompletedTask;
+        }
+
+        public Task<string> GetTypeIdAsync()
+        {
+            string typeId = $"T{_random.Next(1, 10)}";
+            logger.LogDebug("Provided TypeId: {TypeId}", typeId);
+            return Task.FromResult(typeId);
+        }
     }
 }

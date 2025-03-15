@@ -4230,6 +4230,7 @@
     "net8.0": [
       "Microsoft.Extensions.Logging.Console >= 9.0.3",
       "Microsoft.Orleans.Reminders >= 9.1.2",
+      "Microsoft.Orleans.Runtime >= 9.1.2",
       "Microsoft.Orleans.Server >= 9.1.2",
       "Microsoft.Orleans.Streaming >= 9.1.2",
       "OrleansDashboard >= 8.2.0"
@@ -4282,6 +4283,10 @@
             "version": "[9.0.3, )"
           },
           "Microsoft.Orleans.Reminders": {
+            "target": "Package",
+            "version": "[9.1.2, )"
+          },
+          "Microsoft.Orleans.Runtime": {
             "target": "Package",
             "version": "[9.1.2, )"
           },

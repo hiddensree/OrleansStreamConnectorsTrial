@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\sreer\\Desktop\\LIMSimulator\\LimOrleansServerOnlySimulator\\LimOrleansServerOnlySimulator.csproj": {}
+    "c:\\Users\\sreer\\Desktop\\LIMSimulator\\LimOrleansServerOnlySimulator\\LimOrleansServerOnlySimulator.csproj": {}
   },
   "projects": {
-    "C:\\Users\\sreer\\Desktop\\LIMSimulator\\LimOrleansServerOnlySimulator\\LimOrleansServerOnlySimulator.csproj": {
+    "c:\\Users\\sreer\\Desktop\\LIMSimulator\\LimOrleansServerOnlySimulator\\LimOrleansServerOnlySimulator.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\sreer\\Desktop\\LIMSimulator\\LimOrleansServerOnlySimulator\\LimOrleansServerOnlySimulator.csproj",
+        "projectUniqueName": "c:\\Users\\sreer\\Desktop\\LIMSimulator\\LimOrleansServerOnlySimulator\\LimOrleansServerOnlySimulator.csproj",
         "projectName": "LimOrleansServerOnlySimulator",
-        "projectPath": "C:\\Users\\sreer\\Desktop\\LIMSimulator\\LimOrleansServerOnlySimulator\\LimOrleansServerOnlySimulator.csproj",
+        "projectPath": "c:\\Users\\sreer\\Desktop\\LIMSimulator\\LimOrleansServerOnlySimulator\\LimOrleansServerOnlySimulator.csproj",
         "packagesPath": "C:\\Users\\sreer\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\sreer\\Desktop\\LIMSimulator\\LimOrleansServerOnlySimulator\\obj\\",
+        "outputPath": "c:\\Users\\sreer\\Desktop\\LIMSimulator\\LimOrleansServerOnlySimulator\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\sreer\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -48,6 +48,10 @@
               "version": "[9.0.3, )"
             },
             "Microsoft.Orleans.Reminders": {
+              "target": "Package",
+              "version": "[9.1.2, )"
+            },
+            "Microsoft.Orleans.Runtime": {
               "target": "Package",
               "version": "[9.1.2, )"
             },

@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("LimOrleansServerOnlySimulator")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+bf8a9cbd03499eb664653887069bdacf70ec58f7")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+cdf8cd9a2f9e07dd5d3e6207e172d0df92f3b6fa")]
 [assembly: System.Reflection.AssemblyProductAttribute("LimOrleansServerOnlySimulator")]
 [assembly: System.Reflection.AssemblyTitleAttribute("LimOrleansServerOnlySimulator")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

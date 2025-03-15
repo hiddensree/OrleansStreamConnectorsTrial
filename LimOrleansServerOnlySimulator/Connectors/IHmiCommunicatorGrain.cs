@@ -1,8 +1,4 @@
-using System;
-
-namespace LimOrleansServerOnlySimulator.Connectors;
-
-public interface IHmiCommunicatorGrain : IGrainWithGuidKey
+public interface IHmiCommunicator : IGrainWithGuidKey
 {
-    Task<string> RecieveTypeIdAsync();
+    Task<string> GetTypeIdAsync();
 }

@@ -1,97 +1,56 @@
-using LimOrleansServerOnlySimulator.Grains;
+using LimOrleansServer.Grains;
+using LimOrleansServerOnlySimulator.Simulators;
 using Microsoft.Extensions.Logging;
-using Orleans.Streams;
+using Orleans;
+using Orleans.Runtime; // Still needed for IGrainTimer
 
-namespace LimOrleansServerOnlySimulator.Simulators;
-
-public class LimSimulator(ILogger<LimSimulator> logger) : Grain, ILimSimulator, IRemindable
+namespace LimOrleansServer.Simulators
 {
-    private readonly Random _random = new();
-    private bool _isRunning = false;
-    private IAsyncStream<string>? _slabStream;
-    private IAsyncStream<string>? _orderStream;
-    private ILimGrain? _limGrain;
-
-    public override async Task OnActivateAsync(CancellationToken cancellationToken)
+    public class LimSimulator(ILogger<ILimSimulator> logger) : Grain, ILimSimulator
     {
-        _limGrain = GrainFactory.GetGrain<ILimGrain>(this.GetPrimaryKey());
-        var streamProvider = this.GetStreamProvider("Default");
-        _slabStream = streamProvider.GetStream<string>(await _limGrain.GetSlabStreamId());
-        _orderStream = streamProvider.GetStream<string>(await _limGrain.GetOrderStreamId());
-        logger.LogInformation(
-            "LimSimulator activated with primary key {PrimaryKey}",
-            this.GetPrimaryKey()
-        );
+        private readonly Random _random = new();
+        private ILimGrain? _limGrain;
+        private IGrainTimer? _slabTimer;
+        private IGrainTimer? _orderTimer;
 
-        await StartAsync();
-        await base.OnActivateAsync(cancellationToken);
-    }
-
-    public async Task StartAsync()
-    {
-        if (_isRunning)
-            return;
-        _isRunning = true;
-        logger.LogInformation("LimSimulator {PrimaryKey} started", this.GetPrimaryKey());
-
-        await _limGrain!.StartAsync();
-        await this.RegisterOrUpdateReminder(
-            "SimulateHypermateReminder",
-            TimeSpan.Zero,
-            TimeSpan.FromMinutes(1)
-        );
-        await this.RegisterOrUpdateReminder(
-            "SimulateSlabReminder",
-            TimeSpan.Zero,
-            TimeSpan.FromMinutes(1)
-        );
-    }
-
-    public async Task ReceiveReminder(string reminderName, TickStatus status)
-    {
-        switch (reminderName)
+        public override async Task OnActivateAsync(CancellationToken cancellationToken)
         {
-            case "SimulateHypermateReminder":
-                await SimulateHypermateAsync();
-                break;
-            case "SimulateSlabReminder":
-                await SimulateSlabAsync();
-                break;
+            _limGrain = GrainFactory.GetGrain<ILimGrain>(this.GetPrimaryKey());
+            logger.LogInformation("LimSimulator activated with key: {Key}", this.GetPrimaryKey());
+            await StartAsync();
+            await base.OnActivateAsync(cancellationToken);
         }
-    }
 
-    private async Task SimulateHypermateAsync()
-    {
-        string newOrderCode = _random.Next(100000, 999999).ToString("D6");
-        logger.LogInformation(
-            "LimSimulator {PrimaryKey} generated new order code {OrderCode}",
-            this.GetPrimaryKey(),
-            newOrderCode
-        );
-        await _orderStream!.OnNextAsync(newOrderCode); // published in the stream
-    }
+        public async Task StartAsync()
+        {
+            logger.LogInformation("LIM Simulator started.");
+            await _limGrain!.StartAsync();
 
-    private async Task SimulateSlabAsync()
-    {
-        logger.LogInformation(
-            "Simulated slab processing for LimSimulator {PrimaryKey}",
-            this.GetPrimaryKey()
-        );
-        await _slabStream!.OnNextAsync("Simulated slab data"); // published in the stream
-    }
+            _slabTimer = this.RegisterGrainTimer<object>(
+                async _ => await _limGrain.ProcessSlabAsync(),
+                null,
+                TimeSpan.FromSeconds(_random.Next(2, 5)),
+                TimeSpan.FromSeconds(_random.Next(2, 5))
+            );
 
-    public override Task OnDeactivateAsync(
-        DeactivationReason reason,
-        CancellationToken cancellationToken
-    )
-    {
-        _isRunning = false;
-        logger.LogInformation("LimSimulator {PrimaryKey} stopped", this.GetPrimaryKey());
-        return base.OnDeactivateAsync(reason, cancellationToken);
-    }
+            _orderTimer = this.RegisterGrainTimer<object>(
+                async _ =>
+                    await _limGrain.UpdateMasterOrderCode(_random.Next(1, 999999).ToString("D6")),
+                null,
+                TimeSpan.FromSeconds(_random.Next(10, 20)),
+                TimeSpan.FromSeconds(_random.Next(10, 20))
+            );
+        }
 
-    public Task StopAsync()
-    {
-        throw new NotImplementedException();
+        public override Task OnDeactivateAsync(
+            DeactivationReason reason,
+            CancellationToken cancellationToken
+        )
+        {
+            _slabTimer?.Dispose();
+            _orderTimer?.Dispose();
+            logger.LogInformation("LIM Simulator stopped.");
+            return base.OnDeactivateAsync(reason, cancellationToken);
+        }
     }
 }

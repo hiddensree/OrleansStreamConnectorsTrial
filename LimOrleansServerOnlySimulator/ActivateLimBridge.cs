@@ -1,26 +1,21 @@
-using System;
-using LimOrleansServerOnlySimulator.Connectors;
+using LimOrleansServer.Simulators;
 using LimOrleansServerOnlySimulator.Simulators;
+using Microsoft.Extensions.Logging;
+using Orleans.Runtime;
 
-namespace LimOrleansServerOnlySimulator;
-
-public class ActivateLimBridge : IStartupTask
+namespace LimOrleansServer.Tasks
 {
-    private ILimSimulator _limGrain;
-    private IGrainFactory _grainFactory;
-
-    public ActivateLimBridge(IGrainFactory grainFactory)
+    public class ActivateLimBridge(ILogger<ActivateLimBridge> logger, IGrainFactory grainFactory)
+        : IStartupTask
     {
-        _grainFactory = grainFactory;
-        _limGrain = _grainFactory.GetGrain<ILimSimulator>(Guid.NewGuid());
-    }
+        private readonly Guid _simulatorKey = Guid.NewGuid();
 
-    public async Task Execute(CancellationToken cancellationToken)
-    {
-        Task zero = _limGrain.StartAsync();
-        await zero; 
-        // _grainFactory
-        //     .GetGrain<ISimulatedPrinterConnector>(Guid.NewGuid())
-        //     .OnActivateAsync(cancellationToken);
+        public async Task Execute(CancellationToken cancellationToken)
+        {
+            logger.LogInformation("Initializing LimSimulator...");
+            var simulator = grainFactory.GetGrain<ILimSimulator>(_simulatorKey);
+            await simulator.StartAsync();
+            logger.LogInformation("LimSimulator initialized with key: {Key}", _simulatorKey);
+        }
     }
 }

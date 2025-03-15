@@ -98,3 +98,4 @@ c:\Users\sreer\Desktop\LIMSimulator\LimOrleansServerOnlySimulator\bin\Debug\net8
 c:\Users\sreer\Desktop\LIMSimulator\LimOrleansServerOnlySimulator\bin\Debug\net8.0\OpenTelemetry.Api.ProviderBuilderExtensions.dll
 c:\Users\sreer\Desktop\LIMSimulator\LimOrleansServerOnlySimulator\bin\Debug\net8.0\OrleansDashboard.dll
 c:\Users\sreer\Desktop\LIMSimulator\LimOrleansServerOnlySimulator\bin\Debug\net8.0\OrleansDashboard.Core.dll
+c:\Users\sreer\Desktop\LIMSimulator\LimOrleansServerOnlySimulator\obj\Debug\net8.0\LimOrleansServerOnlySimulator.sourcelink.json

@@ -1,73 +1,38 @@
 using Microsoft.Extensions.Logging;
 using Orleans.Streams;
+using SlabSerializer;
 
-namespace LimOrleansServerOnlySimulator.Connectors
+namespace LimOrleansServer.Connectors
 {
-    public class SimulatedPrinterConnector(ILogger<SimulatedPrinterConnector> logger)
+    public class SimulatedPrinterConnector(ILogger<IPrinterConnector> logger)
         : Grain,
-            ISimulatedPrinterConnector,
-            IRemindable
+            IPrinterConnector
     {
-        private readonly ILogger<SimulatedPrinterConnector> _logger = logger;
-        private readonly Guid _limGrainKey = Guid.NewGuid(); // Simulate a unique key for the LimGrain.
-
-        public override async Task OnActivateAsync(CancellationToken cancellationToken)
+        public override Task OnActivateAsync(CancellationToken cancellationToken)
         {
-            var streamProvider = this.GetStreamProvider("Default");
-            var slabStream = streamProvider.GetStream<string>(
-                StreamId.Create("SlabStream", _limGrainKey)
-            );
-            await slabStream.SubscribeAsync(
-                async (data, token) =>
-                {
-                    _logger.LogInformation(
-                        "SimulatedPrinterConnector {PrimaryKey} received slab data {Data}",
-                        this.GetPrimaryKey(),
-                        data
-                    );
-                    await Task.CompletedTask;
-                }
-            );
-
-            _logger.LogInformation(
-                "SimulatedPrinterConnector activated with primary key {PrimaryKey}",
+            logger.LogInformation(
+                "SimulatedPrinterConnector activated with key: {Key}",
                 this.GetPrimaryKey()
             );
+            return Task.CompletedTask;
+        }
 
-            // Register a reminder
-            await this.RegisterOrUpdateReminder(
-                "SimulatedPrinterReminder",
-                dueTime: TimeSpan.FromMinutes(0),
-                period: TimeSpan.FromMinutes(1)
+        public async Task SubscribeAsync(Guid limGrainKey)
+        {
+            var streamProvider = this.GetStreamProvider("Default");
+            var slabStream = streamProvider.GetStream<SlabIdentifier>(
+                StreamId.Create("SlabStream", limGrainKey)
             );
-
-            await base.OnActivateAsync(cancellationToken);
+            await slabStream.SubscribeAsync(
+                async (identifier, token) => await PrintAsync(identifier)
+            );
+            logger.LogInformation("Subscribed to SlabStream for LimGrain: {Key}", limGrainKey);
         }
 
-        public async Task ReceiveReminder(string reminderName, TickStatus status)
+        public Task PrintAsync(SlabIdentifier identifier)
         {
-            if (reminderName == "SimulatedPrinterReminder")
-            {
-                _logger.LogInformation(
-                    "SimulatedPrinterConnector reminder triggered at {Time}",
-                    DateTime.UtcNow
-                );
-                // Add your reminder handling logic here
-                await Task.CompletedTask;
-            }
-        }
-
-        public async Task StartAsync()
-        {
-            var reminder = this.GetReminder("SimulatedPrinterReminder");
-            if (reminder is not null)
-            {
-                await this.RegisterOrUpdateReminder(
-                    "SimulatedPrinterReminder",
-                    dueTime: TimeSpan.FromMinutes(0),
-                    period: TimeSpan.FromMinutes(1)
-                );
-            }
+            logger.LogInformation("Printed: {Identifier}", identifier.FullIdentifier);
+            return Task.CompletedTask;
         }
     }
 }
