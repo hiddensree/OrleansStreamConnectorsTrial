@@ -1,0 +1,24 @@
+# Ignore .NET build outputs
+bin/
+obj/
+
+# Ignore user-specific files
+*.user
+*.csproj.user
+
+# Ignore local configuration files
+*.suo
+*.ncrunchsolution
+*.ncrunchproject
+.vscode/
+.vs/
+.idea/
+
+# Ignore Dockerfile and .dockerignore itself
+Dockerfile
+.dockerignore
+
+# Ignore other unnecessary files
+*.log
+*.tmp
+*.swp
